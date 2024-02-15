@@ -61,6 +61,59 @@ def display_record():
    else: 
       print("Database is closed. Open to use.")
 
+def update_record(): 
+   if sample.isOpen(): 
+      number = input("Enter id to find: ")
+      sample.UpdateDB(number) 
+   else: 
+      print("Database is closed. Open to use.")
+
+
+# def update_record(): 
+#    if sample.isOpen(): 
+#       number = input("Enter id to find: ")
+#       found=sample.binarySearch(int(number))
+#       if found: 
+#             print(f"Record found: {sample.record}")
+#             print("ID: "+sample.record["ID"]+"\t first_name: "+sample.record["first_name"]+"\t last_name: "+sample.record["last_name"]+"\t age: "+str(sample.record["age"])+"\t ticket_num: "+sample.record["ticket_num"]+ "\t fare: "+sample.record["fare"]+"\t date_of_purchase: "+sample.record["date_of_purchase"]+ "\tRecord Number: " + str(sample.recordNum))
+#             print("Choose the field you want to update:")
+#             print("1. First Name")
+#             print("2. Last Name")
+#             print("3. Age")
+#             print("4. Ticket Number")
+#             print("5. Fare")
+#             print("6. Date of Purchase")
+#             field_choice = int(input("Enter the number of the field to update: "))
+#             if field_choice == 1:
+#                fname = input("Enter new first name: ")
+#                sample.record['first_name'] = fname
+#             elif field_choice == 2:
+#                lname = input("Enter new last name: ")
+#                sample.record['last_name'] = lname
+#             elif field_choice == 3:
+#                age = input("Enter new age: ")
+#                sample.record['age'] = age
+#             elif field_choice == 4:
+#                ticket = input("Enter new ticket: ")
+#                sample.record['ticket_num'] = ticket
+#             elif field_choice == 5:
+#                fare = input("Enter new fare: ")
+#                sample.record['fare'] = fare
+#             elif field_choice == 6:
+#                date_of_purchase = input("Enter new date of purchase: ")
+#                sample.record['date_of_purchase'] = date_of_purchase
+#             else:
+#                print("Invalid field choice.")
+#                return False
+#             sample.writeRecord()
+#             return True
+#       else:
+#             print(f"Record with ID {number} not found.")
+#             return False
+#    else: 
+#       print("Database is closed. Open to use.")
+
+
 def create_report(): 
    #Prints out first 10 records using getRecords method of DB class
    if sample.isOpen(): 
@@ -98,6 +151,7 @@ def main():
 
         elif userInput == 6:
            print("Updating record")
+           update_record()
 
         elif userInput == 7:
            #prints first 10 records

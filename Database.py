@@ -65,7 +65,7 @@ class DB:
         else:
             #print("You are going out of bounds. You will see an empty record. Choose something between 0 and " + str(self.num_records - 1))
             self.flag = False
-            #self.record = dict({"ID": "0", "first_name": "Null", "last_name": "Null", "age": "0", "ticket_num": "0", "fare": "0", "date_of_purchase": "Null"})
+            self.record = dict({"ID": "0", "first_name": "Null", "last_name": "Null", "age": "0", "ticket_num": "0", "fare": "0", "date_of_purchase": "Null"})
         
         if self.flag:
             ID = line[0:5]
@@ -153,8 +153,6 @@ class DB:
         return -1  # No non-empty record found
 
 
-
-
     #open the database/also acting as my read data method
     def OpenDB(self, nameDB):
         if self.isOpen():
@@ -196,5 +194,64 @@ class DB:
             print("You do not have any databases open to close them.")
 
     #update record
-    def UpdateDB(self): 
-        pass
+    def UpdateDB(self, inputID): 
+        if self.isOpen(): 
+            found=self.binarySearch(int(inputID))
+            if found: 
+                print("Record to update: ")
+                print("ID: "+self.record["ID"]+"\t first_name: "+self.record["first_name"]+"\t last_name: "+self.record["last_name"]+"\t age: "+str(self.record["age"])+"\t ticket_num: "+self.record["ticket_num"]+ "\t fare: "+self.record["fare"]+"\t date_of_purchase: "+self.record["date_of_purchase"]+ "\tRecord Number: " + str(self.recordNum))
+                print("Choose the field you want to update:")
+                print("1. First Name")
+                print("2. Last Name")
+                print("3. Age")
+                print("4. Ticket Number")
+                print("5. Fare")
+                print("6. Date of Purchase")
+                field_choice = int(input("Enter the number of the field to update: "))
+                
+                self.fileptr.seek(self.recordNum * self.record_size)
+
+                if field_choice == 1:
+                    fname = input("Enter new first name: ")
+                    self.record['first_name'] = fname
+
+                elif field_choice == 2:
+                    lname = input("Enter new last name: ")
+                    self.record['last_name'] = lname
+
+                elif field_choice == 3:
+                    age = input("Enter new age: ")
+                    self.record['age'] = age
+                elif field_choice == 4:
+                    ticket = input("Enter new ticket: ")
+                    self.record['ticket_num'] = ticket
+                elif field_choice == 5:
+                    fare = input("Enter new fare: ")
+                    self.record['fare'] = fare
+                elif field_choice == 6:
+                    date_of_purchase = input("Enter new date of purchase: ")
+                    self.record['date_of_purchase'] = date_of_purchase
+                else:
+                    print("Invalid field choice.")
+                    return False
+                # Write the updated record to the file
+                self.fileptr.seek(self.recordNum * self.record_size)
+                self.fileptr.write("{:5.5}".format(self.record["ID"]))
+                self.fileptr.write("{:15.15}".format(self.record["first_name"]))
+                self.fileptr.write("{:20.20}".format(self.record["last_name"]))
+                self.fileptr.write("{:5.5}".format(self.record["age"]))
+                self.fileptr.write("{:20.20}".format(self.record["ticket_num"]))
+                self.fileptr.write("{:5.5}".format(self.record["fare"]))
+                self.fileptr.write("{:15.15}".format(self.record["date_of_purchase"]))
+                self.fileptr.write("\n")
+
+                return True
+            else:
+                print(f"Record with ID {inputID} not found.")
+                return False
+        else:
+            print("Database is not open.")
+            return False
+
+
+#emptyRecord = {"ID": "0", "first_name": "Null", "last_name": "Null", "age": "0", "ticket_num": "0", "fare": "0", "date_of_purchase": "Null"}
