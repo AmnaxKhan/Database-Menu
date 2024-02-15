@@ -253,5 +253,30 @@ class DB:
             print("Database is not open.")
             return False
 
+    #Deletes record by replacing with empty record.     
+    def deleteDB(self, inputID):
+        if self.isOpen(): 
+            found=self.binarySearch(int(inputID))
+            if found: 
+                self.record = dict({"ID": "0", "first_name": "Null", "last_name": "Null", "age": "0", "ticket_num": "0", "fare": "0", "date_of_purchase": "Null"})
+                self.fileptr.seek(self.recordNum * self.record_size)
+                self.fileptr.write("{:5.5}".format(self.record["ID"]))
+                self.fileptr.write("{:15.15}".format(self.record["first_name"]))
+                self.fileptr.write("{:20.20}".format(self.record["last_name"]))
+                self.fileptr.write("{:5.5}".format(self.record["age"]))
+                self.fileptr.write("{:20.20}".format(self.record["ticket_num"]))
+                self.fileptr.write("{:5.5}".format(self.record["fare"]))
+                self.fileptr.write("{:15.15}".format(self.record["date_of_purchase"]))
+                self.fileptr.write("\n")
+                return True
+            else: 
+                return False
+        else: print("Database is not open. ")
+        return False
+
+    def addDB(self, id, fname, lname, age, ticket, fare, date): 
+        found=self.binarySearch(int(id))
+
+
 
 #emptyRecord = {"ID": "0", "first_name": "Null", "last_name": "Null", "age": "0", "ticket_num": "0", "fare": "0", "date_of_purchase": "Null"}

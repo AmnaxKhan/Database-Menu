@@ -63,56 +63,13 @@ def display_record():
 
 def update_record(): 
    if sample.isOpen(): 
-      number = input("Enter id to find: ")
-      sample.UpdateDB(number) 
+      number = input("Enter id to update: ")
+      if sample.UpdateDB(number): 
+         print("Successfully updated.")
+      else: 
+         print("Operation Failed. ")
    else: 
       print("Database is closed. Open to use.")
-
-
-# def update_record(): 
-#    if sample.isOpen(): 
-#       number = input("Enter id to find: ")
-#       found=sample.binarySearch(int(number))
-#       if found: 
-#             print(f"Record found: {sample.record}")
-#             print("ID: "+sample.record["ID"]+"\t first_name: "+sample.record["first_name"]+"\t last_name: "+sample.record["last_name"]+"\t age: "+str(sample.record["age"])+"\t ticket_num: "+sample.record["ticket_num"]+ "\t fare: "+sample.record["fare"]+"\t date_of_purchase: "+sample.record["date_of_purchase"]+ "\tRecord Number: " + str(sample.recordNum))
-#             print("Choose the field you want to update:")
-#             print("1. First Name")
-#             print("2. Last Name")
-#             print("3. Age")
-#             print("4. Ticket Number")
-#             print("5. Fare")
-#             print("6. Date of Purchase")
-#             field_choice = int(input("Enter the number of the field to update: "))
-#             if field_choice == 1:
-#                fname = input("Enter new first name: ")
-#                sample.record['first_name'] = fname
-#             elif field_choice == 2:
-#                lname = input("Enter new last name: ")
-#                sample.record['last_name'] = lname
-#             elif field_choice == 3:
-#                age = input("Enter new age: ")
-#                sample.record['age'] = age
-#             elif field_choice == 4:
-#                ticket = input("Enter new ticket: ")
-#                sample.record['ticket_num'] = ticket
-#             elif field_choice == 5:
-#                fare = input("Enter new fare: ")
-#                sample.record['fare'] = fare
-#             elif field_choice == 6:
-#                date_of_purchase = input("Enter new date of purchase: ")
-#                sample.record['date_of_purchase'] = date_of_purchase
-#             else:
-#                print("Invalid field choice.")
-#                return False
-#             sample.writeRecord()
-#             return True
-#       else:
-#             print(f"Record with ID {number} not found.")
-#             return False
-#    else: 
-#       print("Database is closed. Open to use.")
-
 
 def create_report(): 
    #Prints out first 10 records using getRecords method of DB class
@@ -120,6 +77,30 @@ def create_report():
       for i in range(10): 
          sample.getRecord(i)
          print("Record "+ str(i) + ", ID: "+sample.record["ID"]+"\t first_name: "+sample.record["first_name"]+"\t last_name: "+sample.record["last_name"]+"\t age: "+str(sample.record["age"])+"\t ticket_num: "+sample.record["ticket_num"]+"\t fare: "+sample.record["fare"]+"\t date_of_purchase: "+sample.record["date_of_purchase"])
+   else: 
+      print("Database is closed. Open to use.")
+
+def delete_record(): 
+   if sample.isOpen(): 
+      id_input = input("Enter id to delete record: ")
+      if sample.deleteDB(id_input): 
+         print(f"Successfully deleted record {input}")
+      else: 
+         print("Operation Failed. ")
+   else: 
+      print("Database is closed. Open to use.")
+
+def add_record(): 
+   if sample.isOpen(): 
+      print("Enter values of the new record: ")
+      id_input = input("ID: ")
+      fname = input("First Name: ")
+      lname = input("Last Name: ")
+      age = input("Age: ")
+      ticket = input("Ticket Number: ")
+      fare = input("Fare: ")
+      date = input("Date of Purchase: ")
+      sample.addDB(id_input, fname, lname, age, ticket, fare, date)
    else: 
       print("Database is closed. Open to use.")
 
@@ -150,7 +131,7 @@ def main():
            display_record()
 
         elif userInput == 6:
-           print("Updating record")
+           #Updates specific attribute of record specified by user
            update_record()
 
         elif userInput == 7:
@@ -158,10 +139,12 @@ def main():
            create_report()
 
         elif userInput == 8:
-              print("Adding record")
+            print("Adding record")
+            add_record()
 
         elif userInput == 9:
-           print("Deleting record")
+           #deletes record upon id input
+           delete_record()
 
         elif userInput == 10:
            if sample.isOpen():
