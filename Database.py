@@ -9,6 +9,10 @@ class DB:
         self.num_records = 0
         self.record_size = 0
         self.fileptr = None
+        self.text_filename = None
+        
+
+    #another write record that takes in recordNum, fields (parameters) 
 
     #create database
     def createDB(self,filename):
@@ -16,7 +20,6 @@ class DB:
         csv_filename = filename + ".csv"
         text_filename = filename + ".data"
         config_filename = filename + ".config"
-        
         # Read the CSV file and write into data files
         with open(csv_filename, "r") as csv_file:
             data_list = list(csv.DictReader(csv_file,fieldnames=('ID','first_name','last_name','age','ticket_num', 'fare', 'date_of_purchase')))
@@ -33,7 +36,7 @@ class DB:
             filestream.write("{:15.15}".format(dict["date_of_purchase"]))
             filestream.write("\n")
             
-
+    
 
         count = 0
         with open(text_filename,"w") as outfile:
@@ -50,6 +53,29 @@ class DB:
         config_fileptr.write(str(self.num_records) + "\n")
         config_fileptr.write(str(self.record_size) + "\n")
         config_fileptr.close()
+
+    def writeRecord(self, recordNum, passengerId, fname, lname, age, ticketNum, fare, date):
+        if recordNum < 0 or recordNum > self.num_records:
+            return -1  # Invalid recordNum
+
+        self.fileptr.seek(recordNum * self.record_size)
+
+        # Format the data and write it to the file
+        self.fileptr.write("{:5.5}".format(passengerId))
+        self.fileptr.write("{:15.15}".format(fname))
+        self.fileptr.write("{:20.20}".format(lname))
+        self.fileptr.write("{:5.5}".format(age))
+        self.fileptr.write("{:20.20}".format(ticketNum))
+        self.fileptr.write("{:5.5}".format(fare))
+        self.fileptr.write("{:15.15}".format(date))
+        self.fileptr.write("\n")
+
+        # Check if the record we wrote overwrote an empty record
+        if recordNum % 2 == 1:
+            return 0
+        else:
+            return 1
+    
 
     #seeking to a specific record method
     def getRecord(self, recordNum):
@@ -94,7 +120,7 @@ class DB:
                 if non_empty_record == -1:
                     # If no non-empty record found, set recordNum for potential insertion
                     self.recordNum = high 
-                    print("Could not find record with ID..", input_ID)
+                    #print("Could not find record with ID..", input_ID)
                     return False
 
                 self.middle = non_empty_record
@@ -118,10 +144,10 @@ class DB:
                     # Handle non-integer IDs
                     high = self.middle - 1
 
-        if not found and self.recordNum is None:
+        if not found or self.recordNum is None:
             # Set recordNum to high + 1 if no suitable spot is found
             self.recordNum = high 
-            print("Could not find record with ID", input_ID)
+            #print("Could not find record with ID", input_ID)
 
         return found
 
@@ -234,17 +260,13 @@ class DB:
                 else:
                     print("Invalid field choice.")
                     return False
-                # Write the updated record to the file
-                self.fileptr.seek(self.recordNum * self.record_size)
-                self.fileptr.write("{:5.5}".format(self.record["ID"]))
-                self.fileptr.write("{:15.15}".format(self.record["first_name"]))
-                self.fileptr.write("{:20.20}".format(self.record["last_name"]))
-                self.fileptr.write("{:5.5}".format(self.record["age"]))
-                self.fileptr.write("{:20.20}".format(self.record["ticket_num"]))
-                self.fileptr.write("{:5.5}".format(self.record["fare"]))
-                self.fileptr.write("{:15.15}".format(self.record["date_of_purchase"]))
-                self.fileptr.write("\n")
-
+                
+                if self.writeRecord(self.recordNum, self.record['ID'], self.record['first_name'], self.record['last_name'], self.record['age'], self.record['ticket_num'], self.record['fare'], self.record['date_of_purchase']) == -1: 
+                    print("invalid record num")
+                elif self.writeRecord(self.recordNum, self.record['ID'], self.record['first_name'], self.record['last_name'], self.record['age'], self.record['ticket_num'], self.record['fare'], self.record['date_of_purchase']) == 0: 
+                    print("empty record ")
+                else: 
+                    print("success!")
                 return True
             else:
                 print(f"Record with ID {inputID} not found.")
@@ -253,29 +275,58 @@ class DB:
             print("Database is not open.")
             return False
 
+    
     #Deletes record by replacing with empty record.     
     def deleteDB(self, inputID):
         if self.isOpen(): 
             found=self.binarySearch(int(inputID))
             if found: 
                 self.record = dict({"ID": "0", "first_name": "Null", "last_name": "Null", "age": "0", "ticket_num": "0", "fare": "0", "date_of_purchase": "Null"})
-                self.fileptr.seek(self.recordNum * self.record_size)
-                self.fileptr.write("{:5.5}".format(self.record["ID"]))
-                self.fileptr.write("{:15.15}".format(self.record["first_name"]))
-                self.fileptr.write("{:20.20}".format(self.record["last_name"]))
-                self.fileptr.write("{:5.5}".format(self.record["age"]))
-                self.fileptr.write("{:20.20}".format(self.record["ticket_num"]))
-                self.fileptr.write("{:5.5}".format(self.record["fare"]))
-                self.fileptr.write("{:15.15}".format(self.record["date_of_purchase"]))
-                self.fileptr.write("\n")
+                if self.writeRecord(self.recordNum, self.record['ID'], self.record['first_name'], self.record['last_name'], self.record['age'], self.record['ticket_num'], self.record['fare'], self.record['date_of_purchase']) == -1: 
+                    print("invalid record num")
+                elif self.writeRecord(self.recordNum, self.record['ID'], self.record['first_name'], self.record['last_name'], self.record['age'], self.record['ticket_num'], self.record['fare'], self.record['date_of_purchase']) == 0: 
+                    print("empty record ")
+                else: 
+                    print("success!")
                 return True
             else: 
+                print("ID does not exist. No record found.")
                 return False
         else: print("Database is not open. ")
         return False
 
     def addDB(self, id, fname, lname, age, ticket, fare, date): 
         found=self.binarySearch(int(id))
+        if found: 
+            print("Sorry there is already a record for this id. ")
+            #self.close()
+            #read csv file
+            #rewrite data file
+            #update num record & record size 
+            #write confieg file
+            #reopen database
+        elif self.record["ID"].strip() == '0':
+            self.record["ID"] = id
+            self.record['first_name'] = fname
+            self.record['last_name'] = lname
+            self.record['age'] = age
+            self.record['ticket_num'] = ticket
+            self.record['fare'] = fare
+            self.record['date_of_purchase'] = date
+            
+            if self.writeRecord(self.recordNum, self.record['ID'], self.record['first_name'], self.record['last_name'], self.record['age'], self.record['ticket_num'], self.record['fare'], self.record['date_of_purchase']) == -1: 
+                print("invalid record num")
+            elif self.writeRecord(self.recordNum, self.record['ID'], self.record['first_name'], self.record['last_name'], self.record['age'], self.record['ticket_num'], self.record['fare'], self.record['date_of_purchase']) == 0: 
+                print("empty record ")
+            #else: 
+                #print("success!")
+
+            #self.updateDB(id)
+            #print("updated")
+            return True
+        else: 
+            # If no empty record is available, rewrite the database
+            print("No empty record available. Try a different ID.")
 
 
 

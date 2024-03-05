@@ -57,7 +57,7 @@ def display_record():
       if found:
          print("ID: "+sample.record["ID"]+"\t first_name: "+sample.record["first_name"]+"\t last_name: "+sample.record["last_name"]+"\t age: "+str(sample.record["age"])+"\t ticket_num: "+sample.record["ticket_num"]+ "\t fare: "+sample.record["fare"]+"\t date_of_purchase: "+sample.record["date_of_purchase"]+ "\tRecord Number: " + str(sample.recordNum))
       else:
-         print(number +  " not found. Location to insert: ",sample.recordNum)  
+         print("ID "+number +  " not found. Location to insert: ",sample.recordNum)  
    else: 
       print("Database is closed. Open to use.")
 
@@ -71,20 +71,29 @@ def update_record():
    else: 
       print("Database is closed. Open to use.")
 
+      
 def create_report(): 
-   #Prints out first 10 records using getRecords method of DB class
-   if sample.isOpen(): 
-      for i in range(10): 
-         sample.getRecord(i)
-         print("Record "+ str(i) + ", ID: "+sample.record["ID"]+"\t first_name: "+sample.record["first_name"]+"\t last_name: "+sample.record["last_name"]+"\t age: "+str(sample.record["age"])+"\t ticket_num: "+sample.record["ticket_num"]+"\t fare: "+sample.record["fare"]+"\t date_of_purchase: "+sample.record["date_of_purchase"])
-   else: 
-      print("Database is closed. Open to use.")
+    # Print the report header
+    print("First 10 Records (sorted by ID):\n")
+    print("ID".ljust(5), "First Name".ljust(15), "Last Name".ljust(20), "Age".ljust(5), "Ticket Number".ljust(20), "Fare".ljust(5), "Date of Purchase".ljust(15))
+    print("-"*85)
+    
+    # Print the first 10 records where the ID exists
+    found_records = 0
+    for i in range(1, sample.num_records):
+        found = sample.binarySearch(str(i).rjust(5, '0'))
+        if found: 
+            print(sample.record["ID"].ljust(5), sample.record["first_name"].ljust(15), sample.record["last_name"].ljust(20), sample.record["age"].ljust(5), sample.record["ticket_num"].ljust(20), sample.record["fare"].ljust(5), sample.record["date_of_purchase"].ljust(15))
+            found_records += 1
+        if found_records == 10:
+            break
+
 
 def delete_record(): 
    if sample.isOpen(): 
       id_input = input("Enter id to delete record: ")
       if sample.deleteDB(id_input): 
-         print(f"Successfully deleted record {input}")
+         print(f"Successfully deleted record.")
       else: 
          print("Operation Failed. ")
    else: 
@@ -108,54 +117,54 @@ def add_record():
 def main():
     quit = False
     while quit == False:
-        userInput = int(menu_interface())
+         userInput = int(menu_interface())
+         if userInput == 1:
+            #Creates database
+            create_database()
 
-        if userInput == 1:
-           #Creates database
-           create_database()
+         elif userInput == 2:
+            #Opens database
+            open_database()
 
-        elif userInput == 2:
-           #Opens database
-           open_database()
+         elif userInput == 3:
+            #Closes database
+            sample.CloseDB()
 
-        elif userInput == 3:
-           #Closes database
-           sample.CloseDB()
+         elif userInput == 4:
+            #Reads record
+            read_record()
 
-        elif userInput == 4:
-           #Reads record
-           read_record()
+         elif userInput == 5:
+            #Displays record using binary search
+            display_record()
 
-        elif userInput == 5:
-           #Displays record using binary search
-           display_record()
+         elif userInput == 6:
+            #Updates specific attribute of record specified by user
+            update_record()
 
-        elif userInput == 6:
-           #Updates specific attribute of record specified by user
-           update_record()
+         elif userInput == 7:
+            #prints first 10 records
+            create_report()
 
-        elif userInput == 7:
-           #prints first 10 records
-           create_report()
+         elif userInput == 8:
+               print("Adding record")
+               add_record()
 
-        elif userInput == 8:
-            print("Adding record")
-            add_record()
+         elif userInput == 9:
+            #deletes record upon id input
+            delete_record()
 
-        elif userInput == 9:
-           #deletes record upon id input
-           delete_record()
-
-        elif userInput == 10:
-           if sample.isOpen():
-              print ("Please close the database first.")
-           else:
-              print("Quitting")
-              quit = True
-
-        else:
-           print("Invalid option. Try again. ")
-
+         elif userInput == 10:
+            if sample.isOpen():
+               print ("Please close the database first.")
+            else:
+               print("Quitting")
+               quit = True
+         else:
+            print("Invalid option. Try again. ")
+         
+            
+         
 
 if __name__ == "__main__":
     main()
